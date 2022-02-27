@@ -4,6 +4,7 @@
 package proposer
 
 import (
+	"github.com/flare-foundation/flare/vms/rpcchainvm"
 	"sort"
 	"time"
 
@@ -28,6 +29,7 @@ type Windower interface {
 		chainHeight,
 		pChainHeight uint64,
 		validatorID ids.ShortID,
+		hash ids.ID,
 	) (time.Duration, error)
 }
 
@@ -38,6 +40,7 @@ type windower struct {
 	subnetID    ids.ID
 	chainSource uint64
 	sampler     sampler.WeightedWithoutReplacement
+	vmClient    *rpcchainvm.VMClient
 }
 
 func New(state validators.State, subnetID, chainID ids.ID) Windower {
@@ -50,7 +53,7 @@ func New(state validators.State, subnetID, chainID ids.ID) Windower {
 	}
 }
 
-func (w *windower) Delay(chainHeight, pChainHeight uint64, validatorID ids.ShortID) (time.Duration, error) {
+func (w *windower) Delay(chainHeight, pChainHeight uint64, validatorID ids.ShortID, hash ids.ID) (time.Duration, error) {
 	if validatorID == ids.ShortEmpty {
 		return MaxDelay, nil
 	}
@@ -61,6 +64,8 @@ func (w *windower) Delay(chainHeight, pChainHeight uint64, validatorID ids.Short
 		return 0, err
 	}
 
+	validatorsMapNew, err := w.vmClient.GetValidators(hash)
+
 	// convert the map of validators to a slice
 	validators := make(validatorsSlice, 0, len(validatorsMap))
 	weight := uint64(0)
@@ -70,6 +75,24 @@ func (w *windower) Delay(chainHeight, pChainHeight uint64, validatorID ids.Short
 			weight: v,
 		})
 		newWeight, err := math.Add64(weight, v)
+		if err != nil {
+			return 0, err
+		}
+		weight = newWeight
+	}
+
+	// New validators from coreth
+	validators = nil
+	for id, u := range validatorsMapNew {
+		if err != nil {
+			continue
+		}
+		validators = append(validators, validatorData{
+			id:        id, //todo figure out why shortID is used
+			weightNew: u,
+			weight:    uint64(u),
+		})
+		newWeight, err := math.Add64(weight, uint64(u))
 		if err != nil {
 			return 0, err
 		}

@@ -96,6 +96,7 @@ func (f *Factory) New(ctx *snow.Context) (interface{}, error) {
 
 	vm.SetProcess(client)
 	vm.ctx = ctx
+	GlobalVMClient = vm
 	return vm, nil
 }
 

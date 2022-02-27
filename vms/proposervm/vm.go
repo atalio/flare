@@ -289,8 +289,9 @@ func (vm *VM) SetPreference(preferred ids.ID) error {
 		return err
 	}
 
+	expectedInnerParentID := blk.Parent()
 	// reset scheduler
-	minDelay, err := vm.Windower.Delay(blk.Height()+1, pChainHeight, vm.ctx.NodeID)
+	minDelay, err := vm.Windower.Delay(blk.Height()+1, pChainHeight, vm.ctx.NodeID, expectedInnerParentID)
 	if err != nil {
 		vm.ctx.Log.Debug("failed to fetch the expected delay due to: %s", err)
 		// A nil error is returned here because it is possible that
