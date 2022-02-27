@@ -578,3 +578,7 @@ func (vm *VM) optimalPChainHeight(minPChainHeight uint64) (uint64, error) {
 	optimalHeight := currentPChainHeight - optimalHeightDelay
 	return math.Max64(optimalHeight, minPChainHeight), nil
 }
+
+func (vm *VM) GetValidators(ids.ID) (map[ids.ShortID]float64, error) {
+	return nil, nil
+}
