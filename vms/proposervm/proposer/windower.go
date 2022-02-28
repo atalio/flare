@@ -4,9 +4,10 @@
 package proposer
 
 import (
-	"github.com/flare-foundation/flare/vms/rpcchainvm"
 	"sort"
 	"time"
+
+	"github.com/flare-foundation/flare/vms/rpcchainvm"
 
 	"github.com/flare-foundation/flare/ids"
 	"github.com/flare-foundation/flare/snow/validators"
@@ -126,7 +127,6 @@ func (w *windower) Delay(chainHeight, pChainHeight uint64, validatorID ids.Short
 	if err != nil {
 		return 0, err
 	}
-
 	delay := time.Duration(0)
 	for _, index := range indices {
 		nodeID := validators[index].id
@@ -136,4 +136,5 @@ func (w *windower) Delay(chainHeight, pChainHeight uint64, validatorID ids.Short
 		delay += WindowDuration
 	}
 	return delay, nil
+
 }

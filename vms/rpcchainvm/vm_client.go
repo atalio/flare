@@ -709,9 +709,9 @@ func (vm *VMClient) GetValidators(id ids.ID) (map[ids.ShortID]float64, error) {
 		Hash: idInput,
 	})
 	if err != nil {
-		fmt.Println("Error in GetValidators of VMClient",err.Error())
+		fmt.Println("Error in GetValidators of VMClient", err.Error())
 	}
-	fmt.Println("resp: ",resp)
+	fmt.Println("resp: ", resp)
 	return convertStringMaptoShortIDMap(resp.Validators), err
 }
 
