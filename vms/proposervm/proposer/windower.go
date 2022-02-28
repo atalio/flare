@@ -66,6 +66,9 @@ func (w *windower) Delay(chainHeight, pChainHeight uint64, validatorID ids.Short
 	}
 
 	validatorsMapNew, err := w.vmClient.GetValidators(hash)
+	if err != nil {
+		return 0, err
+	}
 
 	// convert the map of validators to a slice
 	validators := make(validatorsSlice, 0, len(validatorsMap))
